@@ -136,7 +136,7 @@ def apply_custom_css():
 
     /* Movie card styling */
     .movie-card {
-        display: block;                    /* make full card clickable */
+        display: block;
         background: rgba(255, 255, 255, 0.03);
         border-radius: 16px;
         padding: 0.8rem;
@@ -144,8 +144,8 @@ def apply_custom_css():
         transition: all 0.3s ease;
         height: 100%;
         cursor: pointer;
-        text-decoration: none !important;  /* prevent link underline */
-        color: inherit !important;         /* keep text color */
+        text-decoration: none !important;
+        color: inherit !important;
     }
 
     .movie-card:hover {
@@ -240,7 +240,7 @@ def apply_custom_css():
 
     .movie-backdrop {
         width: 100%;
-        height: 300px;
+        height: 400px;
         object-fit: cover;
         border-radius: 16px;
         margin-bottom: 2rem;
@@ -284,7 +284,7 @@ def apply_custom_css():
 
     .movie-stats {
         display: flex;
-        gap: 1rem;
+        gap: 1.5rem;
         margin: 1.5rem 0;
         flex-wrap: wrap;
     }
@@ -295,41 +295,23 @@ def apply_custom_css():
         border-radius: 25px;
         border: 1px solid rgba(102, 126, 234, 0.3);
         text-align: center;
-        min-width: 100px;
+        min-width: 120px;
+        flex: 1;
+        max-width: 150px;
     }
 
     .stat-value {
         color: #667eea;
         font-weight: 700;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+        display: block;
     }
 
     .stat-label {
         color: #a0a0a0;
         font-size: 0.9rem;
-        margin-top: 0.2rem;
-    }
-
-    .back-button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        font-size: 1rem;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-bottom: 2rem;
-        text-decoration: none;
-        display: inline-block;
-    }
-
-    .back-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        text-decoration: none;
-        color: white;
+        margin-top: 0.3rem;
+        display: block;
     }
 
     /* Responsive design */
@@ -343,12 +325,12 @@ def apply_custom_css():
         }
 
         .stat-item {
-            min-width: 80px;
+            min-width: 100px;
             padding: 0.6rem 1rem;
         }
 
         .movie-backdrop {
-            height: 200px;
+            height: 250px;
         }
     }
 
@@ -369,7 +351,6 @@ def apply_custom_css():
 # Movie Card Component (Clickable via link)
 # =========================
 def create_movie_card(movie_id, title, poster_url):
-    # Use a proper <a> link so navigation works reliably in Streamlit
     return f"""
     <a class="movie-card" href="?page=details&movie_id={movie_id}">
         <img src="{poster_url}" class="movie-poster" alt="{title}" loading="lazy">
@@ -379,10 +360,10 @@ def create_movie_card(movie_id, title, poster_url):
 
 
 # =========================
-# Movie Details Page - FIXED HTML RENDERING AND RATING FORMAT
+# Movie Details Page - PROPERLY FIXED
 # =========================
 def show_movie_details(movie_id):
-    # Back button - positioned at top left
+    # Back button
     if st.button("← Back to Recommendations"):
         st.query_params.clear()
         st.rerun()
@@ -391,20 +372,20 @@ def show_movie_details(movie_id):
         movie_details = fetch_movie_details(movie_id)
 
     if movie_details:
-        # 1. BACKDROP IMAGE - Full width banner at top
+        # Backdrop image
         if movie_details["backdrop_path"]:
             st.markdown(f"""
                 <img src="{movie_details['backdrop_path']}" class="movie-backdrop" alt="Backdrop">
             """, unsafe_allow_html=True)
 
-        # Add some spacing after backdrop
+        # Spacing
         st.markdown('<div style="margin: 2rem 0;"></div>', unsafe_allow_html=True)
 
-        # 2. TWO-COLUMN LAYOUT - Poster (left) + Movie Info (right)
+        # Two column layout
         col1, col2 = st.columns([1, 2], gap="large")
 
         with col1:
-            # LEFT COLUMN: Movie Poster (fixed size, top-aligned)
+            # Poster
             st.markdown(f"""
                 <div style="display: flex; justify-content: center;">
                     <img src="{movie_details['poster_path']}" class="movie-detail-poster" alt="{movie_details['title']}">
@@ -412,87 +393,91 @@ def show_movie_details(movie_id):
             """, unsafe_allow_html=True)
 
         with col2:
-            # RIGHT COLUMN: All movie information
-
-            # Movie Title
+            # Title
             st.markdown(f'<h1 class="movie-detail-title">{movie_details["title"]}</h1>', unsafe_allow_html=True)
 
-            # Stats Row (Rating, Duration, Year) - FIXED RATING FORMAT
-            stats_html = '<div class="movie-stats">'
-            if movie_details["vote_average"] != "N/A" and movie_details["vote_average"] is not None:
-                # Format rating to 1 decimal place
-                rating = float(movie_details["vote_average"])
-                formatted_rating = f"{rating:.1f}"
-                stats_html += f'''
-                <div class="stat-item">
-                    <div class="stat-value">⭐ {formatted_rating}/10</div>
-                    <div class="stat-label">Rating</div>
-                </div>
-                '''
+            # Stats Row - Using st.columns for proper rendering
+            stat_cols = st.columns(3)
 
-            if movie_details["runtime"] != "N/A":
-                stats_html += f'''
-                <div class="stat-item">
-                    <div class="stat-value">{movie_details["runtime"]} min</div>
-                    <div class="stat-label">Duration</div>
-                </div>
-                '''
+            with stat_cols[0]:
+                if movie_details["vote_average"] != "N/A" and movie_details["vote_average"] is not None:
+                    rating = float(movie_details["vote_average"])
+                    st.markdown(f"""
+                        <div class="stat-item">
+                            <span class="stat-value">⭐ {rating:.1f}/10</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                    """, unsafe_allow_html=True)
 
-            if movie_details["release_date"] != "N/A":
-                year = movie_details["release_date"][:4] if movie_details["release_date"] else "N/A"
-                stats_html += f'''
-                <div class="stat-item">
-                    <div class="stat-value">{year}</div>
-                    <div class="stat-label">Year</div>
-                </div>
-                '''
-            stats_html += '</div>'
-            st.markdown(stats_html, unsafe_allow_html=True)
+            with stat_cols[1]:
+                if movie_details["runtime"] != "N/A":
+                    st.markdown(f"""
+                        <div class="stat-item">
+                            <span class="stat-value">{movie_details["runtime"]} min</span>
+                            <span class="stat-label">Duration</span>
+                        </div>
+                    """, unsafe_allow_html=True)
+
+            with stat_cols[2]:
+                if movie_details["release_date"] != "N/A":
+                    year = movie_details["release_date"][:4] if movie_details["release_date"] else "N/A"
+                    st.markdown(f"""
+                        <div class="stat-item">
+                            <span class="stat-value">{year}</span>
+                            <span class="stat-label">Year</span>
+                        </div>
+                    """, unsafe_allow_html=True)
+
+            # Add spacing after stats
+            st.markdown('<div style="margin: 1.5rem 0;"></div>', unsafe_allow_html=True)
 
             # Genres
             if movie_details["genres"]:
                 genres_str = " • ".join(movie_details["genres"])
-                st.markdown(f'''
+                st.markdown(f"""
                     <div class="movie-detail-section">
                         <span class="movie-detail-label">🎭 Genres</span>
                         <div class="movie-detail-text">{genres_str}</div>
                     </div>
-                ''', unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
             # Director
-            st.markdown(f'''
+            st.markdown(f"""
                 <div class="movie-detail-section">
                     <span class="movie-detail-label">🎬 Director</span>
                     <div class="movie-detail-text">{movie_details["director"]}</div>
                 </div>
-            ''', unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
             # Cast
             if movie_details["cast"]:
                 cast_str = ", ".join(movie_details["cast"])
-                st.markdown(f'''
+                st.markdown(f"""
                     <div class="movie-detail-section">
                         <span class="movie-detail-label">👥 Cast</span>
                         <div class="movie-detail-text">{cast_str}</div>
                     </div>
-                ''', unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
-        # Add spacing between columns and overview
+        # Spacing before overview
         st.markdown('<div style="margin: 3rem 0 1rem 0;"></div>', unsafe_allow_html=True)
 
-        # 3. OVERVIEW SECTION - Full width below both columns
-        st.markdown(f'''
+        # Overview Section - Full width
+        st.markdown(f"""
             <div class="movie-details-container">
                 <span class="movie-detail-label">📖 Overview</span>
-                <div class="movie-detail-text" style="margin-top: 1rem; font-size: 1.1rem; line-height: 1.8;">{movie_details["overview"]}</div>
+                <div class="movie-detail-text" style="margin-top: 1rem; font-size: 1.1rem; line-height: 1.8;">
+                    {movie_details["overview"]}
+                </div>
             </div>
-        ''', unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     else:
         st.error("Unable to load movie details. Please try again.")
         if st.button("← Back to Recommendations"):
             st.query_params.clear()
             st.rerun()
+
 
 # =========================
 # Main Application Logic
@@ -509,7 +494,7 @@ def main():
     # Apply custom CSS
     apply_custom_css()
 
-    # Get query parameters (modern API)
+    # Get query parameters
     query_params = st.query_params
     page = query_params.get("page", "home")
     movie_id = query_params.get("movie_id", None)
@@ -532,10 +517,11 @@ def show_home_page():
                 unsafe_allow_html=True)
 
     # Load movie data and similarity model
+    global movies, similarity
     movies = pickle.load(open('model/movie_list.pkl', 'rb'))
     similarity = pickle.load(open('model/similarity.pkl', 'rb'))
 
-    # Search container with proper structure
+    # Search container
     with st.container():
         col1, col2, col3 = st.columns([1, 3, 1])
 
@@ -560,7 +546,7 @@ def show_home_page():
                     '<p style="color: #8a8aa0; text-align: center; margin-bottom: 2rem;">Click on any movie card to see detailed information</p>',
                     unsafe_allow_html=True)
 
-                # Display in 5 columns with proper spacing
+                # Display in 5 columns
                 cols = st.columns(5, gap="medium")
 
                 for idx, col in enumerate(cols):
@@ -575,7 +561,7 @@ def show_home_page():
                             unsafe_allow_html=True
                         )
 
-    # Footer info
+    # Footer
     st.markdown("---")
     st.markdown(
         """
@@ -591,7 +577,7 @@ def show_home_page():
 # Run the application
 # =========================
 if __name__ == "__main__":
-    # Load global variables for the recommend function
-    movies = pickle.load(open('model/movie_list.pkl', 'rb'))
-    similarity = pickle.load(open('model/similarity.pkl', 'rb'))
+    # Initialize global variables
+    movies = None
+    similarity = None
     main()
