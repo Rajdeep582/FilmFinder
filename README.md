@@ -1,4 +1,4 @@
-# 🎬 Movie Recommendation System
+# 🎬 FilmFinder - Movie Recommendation System
 
 ![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
 ![Streamlit](https://img.shields.io/badge/Streamlit-App-red)
