@@ -6,6 +6,11 @@
 
 ---
 
+## 🔗 Live Demo  
+👉 [Click here to try the app](https://your-deployment-link.com)
+
+---
+
 ## 📌 Overview
 
 The **Movie Recommendation System** is a Python-based project that recommends **similar movies** based on the one you select.  
@@ -40,5 +45,13 @@ Whether you’re looking for a blockbuster, rom-com, thriller, or action-packed 
 ---
 
 ## 📂 Project Structure
-
-
+```bash
+FilmFinder/
+├── assets/               # Images, UI-related assets
+├── model/                # Pickle/model files
+├── src/                  # Source code (helpers, modules, etc.)
+├── README.md             # Project documentation
+├── app.py                # Main entry point (Flask/Streamlit app)
+├── requirements.txt      # Dependencies
+├── setup.sh              # Setup script for deployment
+---
