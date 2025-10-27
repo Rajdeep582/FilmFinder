@@ -7,7 +7,7 @@
 ---
 
 ## 🔗 Live Demo  
-👉 [Click here to try the app](https://find-my-film.streamlit.app/)
+👉 [Click here to try the app](https://find-my-show.streamlit.app/)
 
 ---
 
